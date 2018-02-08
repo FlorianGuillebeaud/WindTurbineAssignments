@@ -18,3 +18,6 @@ Maybe, but how does it work ?
 
 Hang on, what is a Terminal window ? 
 -- I guess at the very beginning of computer, it was the only interface to communicate to the computer. 
+
+Ok got it, what's next ?
+-- Create an account on GitHub.com, which hosts the master version of the project (for us it's gonna be the data files, the matlab code and do one, but it can be extended to everything !)
