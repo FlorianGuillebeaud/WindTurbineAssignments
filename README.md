@@ -17,7 +17,9 @@ Maybe, but how does it work ?
 -- First of, for Git to work, you'll have to use your Terminal. Once you have found how to open a Terminal window, you've done most of the jobs. 
 
 Hang on, what is a Terminal window ? 
--- I guess at the very beginning of computer, it was the only interface to communicate to the computer. 
+-- I guess at the very beginning of computer, it was the only interface to communicate to the computer. On windows, you can simply open it by following Start >> Program Files >> Accessories >> Command Prompt. You can read the basic commands online to get the main idea.
 
 Ok got it, what's next ?
--- Create an account on GitHub.com, which hosts the master version of the project (for us it's gonna be the data files, the matlab code and do one, but it can be extended to everything !)
+-- Create an account on GitHub.com, which hosts the master and branches of the project on which we're going to work on (for us it's gonna be the data files, the matlab code and do one, but it can be extended to everything !) 
+
+
