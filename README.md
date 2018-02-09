@@ -25,7 +25,7 @@ Fair enough, then ?
 
 Do so by : 
 - first locating your terminal in the directory you wanna be 
-- typing in the Terminal : git clone + "the url you will get from me"
+- typing in the Terminal : git clone + "the url you will get from me I guess"
 
 ----------
 ----------
@@ -41,9 +41,28 @@ There are few basic commands we'll be using mainly all the time !
 => use it as follow : "git add function.m" or "git add --all" (will add everything at once!) 
 
 - git commit % when added, the files are just on the local staging area, neither the remote or the local directory see these modifications. However, now you can commit. Commit basically puts the files you commit on the local repository. That means that now you can see the modification you have done, and they have been saved locally. 
-=> use it as follow : "git commit "
+=> use it as follow : "git commit -m "write a message here" " NB : -m "" is REALLY IMPORTANT, it's simply a brief message to inform what you have done. AVOID "modifications" or "function.m modified" since git save the modifications, we'll know that you have modified it ! Prefer -m "function.m import vector detailled" or whatever, but be specific and short. 
+
+What if I forget to put -m "" ? Well you'll see a weird message appear, from which you'll only be able to get out by : 
+1/ specifying a message
+2/ press ESC and write :wq (don't ask me why)
+
+- git push % now you want us to see the changes you've made, i.e. you want to save the modifications on the remote depository. This push command simply pushes the modification up-there. 
+=> use it as follow : "git push origin master" (if you work on the master // we'll get back to that)
+
+- git pull % let's say some one comes the morning early, want to work on the project, then he would have to pull (down on its directory) what you have pushed earlier ! (make sense right ?)
+=> use it as follow : "git pull origin master" if you want to pull everything down from the master
 
 
+That is basically it for the simple and basic commands.   
+
+----------
+----------
+Let's complexify a bit
+----------
+----------
 
 
-What is the difference between git commit and git add ? 
+alias graph "git log --all --decorate --online --graph"
+https://www.youtube.com/watch?v=FyAAIHHClqI
+
