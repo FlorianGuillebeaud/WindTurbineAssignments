@@ -66,3 +66,6 @@ Let's complexify a bit
 alias graph "git log --all --decorate --online --graph"
 https://www.youtube.com/watch?v=FyAAIHHClqI
 
+
+Ok I hadn't figured it out until now but you can do everything in here ! 
+
