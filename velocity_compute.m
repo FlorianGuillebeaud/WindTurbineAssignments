@@ -6,7 +6,7 @@ global a_12 a_21 a_34 V_0 omega Theta_cone
         rt = [H 0 0] ; 
         rs = a_21*[0 0 -Ls]' ;
         
-        if j==1 
+        if j==1 % blade 1  
             a_23_1 = [cos(Theta_wing1) sin(Theta_wing1) 0 ; 
                        -sin(Theta_wing1) cos(Theta_wing1) 0 ;
                        0 0 1] ;
@@ -18,10 +18,10 @@ global a_12 a_21 a_34 V_0 omega Theta_cone
                 % r = rt'+rs+rb ;
                 % Velovity 
                     V0_4 = a_14_1*[0 0 V_0]' ;
-                    Vrel_y = V0_4(2) + Wy + omega*r*cos(Theta_cone) ;
+                    Vrel_y = V0_4(2) + Wy - omega*r*cos(Theta_cone) ;
                     Vrel_z = V0_4(3) + Wz ;
             
-        elseif j==2
+        elseif j==2 % blade 2
             a_23_2 = [cos(Theta_wing2) sin(Theta_wing2) 0 ; 
                       -sin(Theta_wing2) cos(Theta_wing2) 0 ;
                       0 0 1] ;
@@ -33,10 +33,10 @@ global a_12 a_21 a_34 V_0 omega Theta_cone
                 % r(:,i) = rt'+rs+rb ;
                 % Velovity 
                     V0_4 = a_14_2*[0 0 V_0]' ;
-                    Vrel_y = V0_4(2) + Wy + omega*r*cos(Theta_cone) ;
+                    Vrel_y = V0_4(2) + Wy - omega*r*cos(Theta_cone) ;
                     Vrel_z = V0_4(3) + Wz ;
             
-        else
+        else % blade 3 
             a_23_3 = [cos(Theta_wing3) sin(Theta_wing3) 0 ; 
                       -sin(Theta_wing3) cos(Theta_wing3) 0 ;
                       0 0 1] ;
@@ -47,7 +47,7 @@ global a_12 a_21 a_34 V_0 omega Theta_cone
                 % r(:,i) = rt'+rs+rb ;
                 % Velovity 
                     V0_4 = a_14_3*[0 0 V_0]' ;
-                    Vrel_y = V0_4(2) + Wy + omega*r*cos(Theta_cone) ;
+                    Vrel_y = V0_4(2) + Wy - omega*r*cos(Theta_cone) ;
                     Vrel_z = V0_4(3) + Wz ;
              
         end

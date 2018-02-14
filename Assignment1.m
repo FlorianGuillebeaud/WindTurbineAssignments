@@ -71,25 +71,28 @@ a_43 = a_34' ;
 
 
 %% Loop
-for i=2:4
+for i=2:2
     i
     time(i) = time(i-1) + delta_t ;
     Theta_wing1(i) = Theta_wing1(i-1) + omega*delta_t ; % blade 1
     Theta_wing2(i) = Theta_wing1(i) + 2*pi/3 ; % blade 2
     Theta_wing3(i) = Theta_wing1(i) + 4*pi/3 ; % blade 3
     
-    for j=1:B
-        j
+    % loop over each blade B
+    for b=1:1
+        b
+        % loop over each element
         for k=1:N_element
             k
-            [Vrel_y, Vrel_z] = velocity_compute(j, blade_data(k), H, Ls, Wy(j,k), Wz(j,k), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(b,k), Wz(b,k), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (degtorad(blade_data(k,3)) + Theta_pitch)) ;
-            alpha
+            
 
             % first method (doesn't take into account the dynamic stall 
             [Cl, Cd]= interpolation(k, alpha) ;
+            
             % second method
                 % calculate Cl_inv , fstatic, Cl_fs using interpolation
                 % calculate tau = 4*c/Vrel
@@ -102,7 +105,8 @@ for i=2:4
             pz(k) = Lift*cos(phi) + Drag*sin(phi) ;
             py(k) = Lift*sin(phi) - Drag*cos(phi) ;
             
-            a = Wz(i-1)/V_0 ;
+            a = Wz(b,k)/V_0 ;
+             
             if a<=1/3
                 fg = 1 ;
             else
@@ -115,9 +119,10 @@ for i=2:4
              
            
             % TO BE SOLVED : Wz_qs and Wy_qs depend on i and k right ?
-            Wz(j,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(j,k))))) ;
-            Wy(j,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wy(j,k))))) ;
-            
+            Wz(b,k) = - B*Lift*cos(Theta_yaw)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+            Wz(b,k)
+            Wy(b,k) = - B*Lift*sin(Theta_yaw)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+            Wy(b,k)
             % W_qs(i) = Wz_qs(i) + Wy_qs(i)
             % tau1 = (1.1/(1-1.3*a))*(R/V_0)
             % tau2 = (0.39-0.26*(r/R)^2)*tau1
