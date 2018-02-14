@@ -29,18 +29,23 @@ V_0 = 8 ; % [m/s] Constant wind speed
 rho = 1,225 ; % [kg/m3] air mass density
 k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
+%
+delta_t = 0.15 ; % [s]
+N = 150 ; % [s]
+N_element = length(blade_data) ;
+
 
 global Theta_pitch Theta_cone Theta_tilt Theta_yaw
-Theta_pitch = 0 ; % [degre]
-Theta_cone = 0 ; % [degre]
-Theta_tilt = 0 ; % [degre]
-Theta_yaw = 0 ; % [degre]
+Theta_pitch = 0 ; % [rad]
+Theta_cone = 0 ; % [rad]
+Theta_tilt = 0 ; % [rad]
+Theta_yaw = 0 ; % [rad]
 
 %% Initialization %%
 V0y = 0 ;
 V0z = V_0 ;
-Wy(1) = 0 ;
-Wz(1) = 0 ;
+Wy = zeros(B,N_element) ;
+Wz =  zeros(B,N_element) ;
 time(1) = 0 ;
 
 % Wind position initialization
@@ -64,13 +69,9 @@ a_34 = [cos(Theta_cone) 0 -sin(Theta_cone) ;
 
 a_43 = a_34' ;
 
-%
-delta_t = 0.15 ; % [s]
-N = 150 ; % [s]
-N_element = length(blade_data) ;
 
 %% Loop
-for i=2:N+1
+for i=2:4
     i
     time(i) = time(i-1) + delta_t ;
     Theta_wing1(i) = Theta_wing1(i-1) + omega*delta_t ; % blade 1
@@ -81,13 +82,14 @@ for i=2:N+1
         j
         for k=1:N_element
             k
-            [Vrel_y, Vrel_z] = velocity_compute(j, blade_data(k), H, Ls, Wy(i-1), Wz(i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            [Vrel_y, Vrel_z] = velocity_compute(j, blade_data(k), H, Ls, Wy(j,k), Wz(j,k), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
-            phi = atan(-Vrel_z/Vrel_y) ;
-            alpha = phi - (blade_data(k,3) + Theta_pitch) ;
-            
+            phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
+            alpha = radtodeg(phi - (degtorad(blade_data(k,3)) + Theta_pitch)) ;
+            alpha
+
             % first method (doesn't take into account the dynamic stall 
-            [Cl, Cd]=interpolation(k, alpha) ;
+            [Cl, Cd]= interpolation(k, alpha) ;
             % second method
                 % calculate Cl_inv , fstatic, Cl_fs using interpolation
                 % calculate tau = 4*c/Vrel
@@ -110,12 +112,11 @@ for i=2:N+1
             % Prand
             f = (B/2)*(R-blade_data(k))/(blade_data(k)*abs(sin(phi)));
             F= 2*acos(exp(-f))/pi;
-            
-            % New Cl 
-            
+             
+           
             % TO BE SOLVED : Wz_qs and Wy_qs depend on i and k right ?
-            Wz_qs(i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))))) ;
-            Wy_qs(i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))))) ;
+            Wz(j,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(j,k))))) ;
+            Wy(j,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wy(j,k))))) ;
             
             % W_qs(i) = Wz_qs(i) + Wy_qs(i)
             % tau1 = (1.1/(1-1.3*a))*(R/V_0)
