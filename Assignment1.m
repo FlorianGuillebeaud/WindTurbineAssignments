@@ -4,16 +4,15 @@ close all
 clear all
 clc
 
-%% Read Blade Data %%
+%% Read Blade and airfoil Data %%
 blade_data = xlsread('Blade_data') ;
 
-%% Read airfoil Data %%
-% cylinder = textread('airfoil_data/AirfoilPCdata/cylinder_ds.txt') ;
-% FFA_W3_241 = textread('airfoil_data/AirfoilPCdata/FFA-W3-241_ds.txt');
-% FFA_W3_301 = textread('airfoil_data/AirfoilPCdata/FFA-W3-301_ds.txt');
-% FFA_W3_360 = textread('airfoil_data/AirfoilPCdata/FFA-W3-360_ds.txt');
-% FFA_W3_480 = textread('airfoil_data/AirfoilPCdata/FFA-W3-480_ds.txt');
-% FFA_W3_600 = textread('airfoil_data/AirfoilPCdata/FFA-W3-600_ds.txt');
+W3_100 = importdata('cylinder_ds.txt'); %100% CILINDER
+W3_60  = importdata('FFA-W3-600_ds.txt'); %600
+W3_48  = importdata('FFA-W3-480_ds.txt'); %480
+W3_36  = importdata('FFA-W3-360_ds.txt'); %360
+W3_30  = importdata('FFA-W3-301_ds.txt'); %301
+W3_24  = importdata('FFA-W3-241_ds.txt'); %241
 
 %% Global parameters %%
 H = 119 ; % hub height (m)
@@ -31,7 +30,7 @@ k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
 delta_t = 0.02 ; % [s]
-N = 100 ; % [s]
+N = 1100 ; % [s]
 N_element = length(blade_data) ;
 
 
@@ -73,7 +72,7 @@ a_43 = a_34' ;
 
 %% Loop
 for i=2:N
-    % i
+
     time(i) = time(i-1) + delta_t ;
     Theta_wing1(i) = Theta_wing1(i-1) + omega*delta_t ; % blade 1
     Theta_wing2(i) = Theta_wing1(i) + 2*pi/3 ; % blade 2
@@ -82,18 +81,40 @@ for i=2:N
     % loop over each blade B
     for b=1:B
         % b
-        % loop over each element
-        for k=1:(N_element-1)
+        % loop over each element N_element
+        for k=1:N_element
             % k
-            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(b,k), Wz(b,k), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, real(Wy(b,k)), real(Wz(b,k)), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (-degtorad(blade_data(k,3)) + Theta_pitch)) ;
             % alpha
 
             % first method (doesn't take into account the dynamic stall 
-            [Cl, Cd]= interpolation(k, alpha) ;
+            thick = [100, 60, 48, 36, 30.1, 24.1] ; 
             
+            % Cl interpolation 
+            cl1 = interp1(W3_100(:,1), W3_100(:,2), alpha) ;
+            cl2 = interp1(W3_60(:,1), W3_60(:,2), alpha) ;
+            cl3 = interp1(W3_48(:,1), W3_48(:,2), alpha);
+            cl4 = interp1(W3_36(:,1), W3_36(:,2), alpha);
+            cl5 = interp1(W3_30(:,1), W3_30(:,2), alpha);
+            cl6 = interp1(W3_24(:,1), W3_24(:,2), alpha);
+            cl_union = [cl1 cl2 cl3 cl4 cl5 cl6] ; 
+            Cl = interp1(thick, cl_union, blade_data(k,4)) ;
+           
+            
+            % Cd interpolation 
+            cd1 = interp1(W3_100(:,1), W3_100(:,3), alpha) ;
+            cd2 = interp1(W3_60(:,1), W3_60(:,3), alpha) ;
+            cd3 = interp1(W3_48(:,1), W3_48(:,3), alpha);
+            cd4 = interp1(W3_36(:,1), W3_36(:,3), alpha);
+            cd5 = interp1(W3_30(:,1), W3_30(:,3), alpha);
+            cd6 = interp1(W3_24(:,1), W3_24(:,3), alpha);
+            cd_union = [cd1 cd2 cd3 cd4 cd5 cd6] ; 
+            Cd = interp1(thick, cd_union, blade_data(k,4)) ;
+             
+       
             % second method
                 % calculate Cl_inv , fstatic, Cl_fs using interpolation
                 % calculate tau = 4*c/Vrel
@@ -109,6 +130,7 @@ for i=2:N
             % without Yaw, a can be calculate as follow : 
             a = abs(Wz(b,k))/V_0 ;
            
+            % with yaw : need to be implemented 
             if a<=1/3
                 fg = 1 ;
             else
@@ -120,10 +142,16 @@ for i=2:N
             F= 2*acos(exp(-f))/pi;
              
            
-            % TO BE SOLVED : Wz_qs and Wy_qs depend on b and k right ?
-            Wz(b,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
-            Wy(b,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
-            
+            % We add this if statement otherwise the last element if NaN 
+            % (F = 0 !! )
+            if k==N_element
+                Wz(b,k) = 0 ; 
+                Wy(b,k) = 0 ; 
+            else   
+                Wz(b,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+                Wy(b,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+            end
+          
             dm(k) = blade_data(k)*B*pz(k) ;
             dP(k) = omega*dm(k) ;
             
@@ -139,9 +167,14 @@ for i=2:N
         py(N_element) = 0 ; 
         dm(N_element) = 0 ; 
         dP(N_element) = 0 ; 
-        if time(i)==20 
-        plot(blade_data(:,1), real(pz)) ;
-        plot(blade_data(:,1), real(py)) ;
+        
+        % Sanity check with teacher's results
+        if i==1000
+        time(i)
+        figure(1)
+        plot(blade_data(:,1), real(pz)) 
+        figure(2) 
+        plot(blade_data(:,1), real(py)) 
         end
         p(b,i) = trapz(blade_data(:,1),real(pz)) ;
         % power computation 

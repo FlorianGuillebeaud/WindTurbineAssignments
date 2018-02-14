@@ -6,6 +6,7 @@ tc_3=importdata('FFA-W3-360_ds.txt'); %360
 tc_4=importdata('FFA-W3-480_ds.txt'); %480
 tc_5=importdata('FFA-W3-600_ds.txt'); %600
 tc_6=importdata('cylinder_ds.txt'); %100% CILINDER
+
 if k<3
     Cl_sta=interp1(tc_6(:,1),tc_6(:,2),alpha);
     Cd_sta=interp1(tc_6(:,1),tc_6(:,3),alpha);
