@@ -85,7 +85,15 @@ for i=2:N+1
             
             phi = atan(-Vrel_z/Vrel_y) ;
             alpha = phi - (blade_data(k,3) + Theta_pitch) ;
+            
+            % first method (doesn't take into account the dynamic stall 
             [Cl, Cd]=interpolation(k, alpha) ;
+            % second method
+                % calculate Cl_inv , fstatic, Cl_fs using interpolation
+                % calculate tau = 4*c/Vrel
+                % update fs(i) = fstatic + (fs(i-1)-fstatic)*exp(-delta_t/tau)
+                % calculate Cl(i) = fs(i)* Cl,inv + (1-fs(i))*Cl,fs
+            
             Vrel_abs = sqrt(Vrel_y^2+Vrel_z^2) ;
             Lift = 0.5*rho*Vrel_abs^2*Cl*blade_data(k,2) ;
             Drag = 0.5*rho*Vrel_abs^2*Cd*blade_data(k,2) ;
@@ -102,6 +110,8 @@ for i=2:N+1
             % Prand
             f = (B/2)*(R-blade_data(k))/(blade_data(k)*abs(sin(phi)));
             F= 2*acos(exp(-f))/pi;
+            
+            % New Cl 
             
             % TO BE SOLVED : Wz_qs and Wy_qs depend on i and k right ?
             Wz_qs(i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))))) ;
