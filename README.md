@@ -1,5 +1,49 @@
 # WindTurbineAssignments
 
+----------
+----------
+Useful command 
+----------
+----------
+The branches are created on the remote, you first need to bring it locally : type 
+git checkout -b NameBranch 
+
+See, it has been created, type :
+git branch 
+
+Checkout from the master branch to your branch, type : 
+git checkout NameBranch 
+
+What is the status of this branch, type : 
+git status 
+
+Let's say you have done some work on assignment1.m. 
+What is the status of this branch, type : 
+git status // will show you in red that assignment1.m has been modificated 
+
+How to save ON THE REMOTE, follow the steps : 
+git add filename.txt(.m whatever)
+	-> want add everythin ? git add --a 
+
+What is the status of this branch, type :
+git status // you'll see assignment1.m in green
+
+Now you must commit but don't forget the message ! 
+git commit -m "describe the modifications you have done"
+
+You want to push on the remote (but on your branch) :
+git push origin NameBranch
+
+
+
+
+----------
+----------
+----------
+----------
+
+
+
 Git presents the avantage that everyone can work on the source folder (cloned locally) and then submit it to GitHub. One could also work on someone's code by cloning it to its local directory (I guess). 
 
 What is Git ? 
