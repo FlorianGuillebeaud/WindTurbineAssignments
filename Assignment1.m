@@ -18,15 +18,15 @@ blade_data = xlsread('Blade_data') ;
 %% Global parameters %%
 H = 119 ; % hub height (m)
 Ls = 7.1 ; % m
-R = 89,17 ; % [m] Rotor radius
+R = 89.17 ; % [m] Rotor radius
 B = 3 ; % Number of blades
 Pr = 10000*10^3 ; % [W] Rated Power
 Vcut_in = 4 ; % [m/s] Cut in speed
 Vcut_out = 25 ; % [m/s] Cut out speed
 global omega V_0 rho k_emp
-omega = 0,673 ; % [rad/s] Constant rotational speed
+omega = 0.673 ; % [rad/s] Constant rotational speed
 V_0 = 8 ; % [m/s] Constant wind speed
-rho = 1,225 ; % [kg/m3] air mass density
+rho = 1.225 ; % [kg/m3] air mass density
 k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
@@ -71,7 +71,7 @@ a_43 = a_34' ;
 
 
 %% Loop
-for i=2:2
+for i=2:5
     i
     time(i) = time(i-1) + delta_t ;
     Theta_wing1(i) = Theta_wing1(i-1) + omega*delta_t ; % blade 1
@@ -88,7 +88,7 @@ for i=2:2
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (degtorad(blade_data(k,3)) + Theta_pitch)) ;
-            
+            alpha
 
             % first method (doesn't take into account the dynamic stall 
             [Cl, Cd]= interpolation(k, alpha) ;
@@ -105,8 +105,9 @@ for i=2:2
             pz(k) = Lift*cos(phi) + Drag*sin(phi) ;
             py(k) = Lift*sin(phi) - Drag*cos(phi) ;
             
-            a = Wz(b,k)/V_0 ;
-             
+            % without Yaw, a can be calculate as follow : 
+            a = abs(Wz(b,k))/V_0 ;
+           
             if a<=1/3
                 fg = 1 ;
             else
@@ -120,9 +121,7 @@ for i=2:2
            
             % TO BE SOLVED : Wz_qs and Wy_qs depend on i and k right ?
             Wz(b,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
-            Wz(b,k)
             Wy(b,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
-            Wy(b,k)
             % W_qs(i) = Wz_qs(i) + Wy_qs(i)
             % tau1 = (1.1/(1-1.3*a))*(R/V_0)
             % tau2 = (0.39-0.26*(r/R)^2)*tau1
