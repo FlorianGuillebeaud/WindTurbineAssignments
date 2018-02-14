@@ -111,5 +111,8 @@ alias graph "git log --all --decorate --online --graph"
 https://www.youtube.com/watch?v=FyAAIHHClqI
 
 
-Ok I hadn't figured it out until now but you can do everything in here ! 
+Ok I hadn't figured it out until now but you can do everything in here !
+
+
+Demonstration for my friends
 
