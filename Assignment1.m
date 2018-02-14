@@ -119,9 +119,9 @@ for i=2:2
              
            
             % TO BE SOLVED : Wz_qs and Wy_qs depend on i and k right ?
-            Wz(b,k) = - B*Lift*cos(Theta_yaw)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+            Wz(b,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
             Wz(b,k)
-            Wy(b,k) = - B*Lift*sin(Theta_yaw)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+            Wy(b,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
             Wy(b,k)
             % W_qs(i) = Wz_qs(i) + Wy_qs(i)
             % tau1 = (1.1/(1-1.3*a))*(R/V_0)
