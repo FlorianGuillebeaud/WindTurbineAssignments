@@ -25,8 +25,8 @@ if k>6 && k<10
     Cd_sta_interp=[interp1(tc_2(:,1),tc_2(:,3),alpha) interp1(tc_1(:,1),tc_1(:,3),alpha)];
     table=[30.1 24.1];
     if k==9
-        Cl_sta=interp1(table, Cl_sta_interp, 24.89);
-        Cd_sta=interp1(table, Cd_sta_interp, 24.89);
+        Cl_sta=interp1(table, Cl_sta_interp, 24.26);
+        Cd_sta=interp1(table, Cd_sta_interp, 24.26);
     end
     if k==8
         Cl_sta=interp1(table, Cl_sta_interp, 25.32);
