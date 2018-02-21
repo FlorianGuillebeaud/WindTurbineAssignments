@@ -193,3 +193,15 @@ end
 
 Power_cum = 3*Power(1) 
 Thrust = sum(thrust(:,1)) 
+
+%% Plots 
+figure(1) 
+plot(blade_data(:,1), real(pz))
+xlabel('Element position $[m]$','interpreter','latex',  'FontSize', 20)
+ylabel('Load [N]','interpreter','latex',  'FontSize', 20)
+
+figure(2)
+plot(blade_data(:,1), real(py))
+xlabel('Element position [m]',  'FontSize', 20)
+ylabel('Load [N]',  'FontSize', 20)
+
