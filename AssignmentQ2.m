@@ -94,10 +94,10 @@ for i=2:N
     end
     
     % loop over each blade B
-    for b=1:1
+    for b=1:3
         % b
         % loop over each element N_element
-        for k=1:N_element
+        for k=9:9
             % k
             [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(i-1), Wz(i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
@@ -177,8 +177,8 @@ for i=2:N
                 Wz_qs(i) = 0 ; 
                 Wy_qs(i) = 0 ; 
             else   
-                Wz_qs(i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz_qs(i-1))^2))) ;
-                Wy_qs(i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz_qs(i-1))^2))) ;
+                Wz_qs(i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))^2))) ;
+                Wy_qs(i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))^2))) ;
                 
             end
                       
