@@ -4,6 +4,10 @@ close all
 clear all
 clc
 
+%%Malaca section : try for git
+
+try = 1 ;
+
 %% Read Blade Data %%
 blade_data = xlsread('Blade_data') ;
 
