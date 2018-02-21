@@ -7,6 +7,7 @@ global a_12 a_21 a_34 V_0 omega Theta_cone
         rs = a_21*[0 0 -Ls]' ;
         
         if j==1 % blade 1  
+            
             a_23_1 = [cos(Theta_wing1) sin(Theta_wing1) 0 ; 
                        -sin(Theta_wing1) cos(Theta_wing1) 0 ;
                        0 0 1] ;

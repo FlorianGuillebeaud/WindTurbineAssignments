@@ -43,8 +43,10 @@ Theta_yaw = 0 ; % [rad]
 %% Initialization %%
 V0y = 0 ;
 V0z = V_0 ;
-Wy = zeros(B,N_element) ;
-Wz =  zeros(B,N_element) ;
+Wy = zeros(B,N_element,N) ;
+Wz =  zeros(B,N_element,N) ;
+a_rem = zeros(B,N_element,N) ; 
+
 p = zeros(B, N) ; 
 time(1) = 0 ;
 
@@ -84,7 +86,9 @@ for i=2:N
         % loop over each element N_element
         for k=1:N_element
             % k
-            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, real(Wy(b,k)), real(Wz(b,k)), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            % [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, abs(Wy(b,k,i-1)), abs(Wz(b,k,i-1)), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
+            Vrel_z = V_0+Wz(b,k,i-1);
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (-degtorad(blade_data(k,3)) + Theta_pitch)) ;
@@ -128,8 +132,8 @@ for i=2:N
             py(k) = Lift*sin(phi) - Drag*cos(phi) ;
             
             % without Yaw, a can be calculate as follow : 
-            a = abs(Wz(b,k))/V_0 ;
-           
+            a = abs(Wz(b,k,i-1))/V_0 ;
+            a_rem(b,k,i) = a ;
             % with yaw : need to be implemented 
             if a<=1/3
                 fg = 1 ;
@@ -145,11 +149,11 @@ for i=2:N
             % We add this if statement otherwise the last element if NaN 
             % (F = 0 !! )
             if k==N_element
-                Wz(b,k) = 0 ; 
-                Wy(b,k) = 0 ; 
+                Wz(b,k,i) = 0 ; 
+                Wy(b,k,i) = 0 ; 
             else   
-                Wz(b,k) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
-                Wy(b,k) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k))))) ;
+                Wz(b,k,i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k,i-1))^2))) ;
+                Wy(b,k,i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k,i-1))^2))) ;
             end
           
             dm(k) = blade_data(k)*B*pz(k) ;
@@ -169,13 +173,13 @@ for i=2:N
         dP(N_element) = 0 ; 
         
         % Sanity check with teacher's results
-        if i==1000
+        if (i==1000)
         time(i)
         figure(1)
         plot(blade_data(:,1), real(pz)) 
         figure(2) 
         plot(blade_data(:,1), real(py)) 
-        end
+        end 
         p(b,i) = trapz(blade_data(:,1),real(pz)) ;
         % power computation 
         Power(b,i) = trapz(blade_data(:,1), real(dP)) ; 
