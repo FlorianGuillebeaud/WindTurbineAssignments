@@ -186,13 +186,13 @@ for i=2:1000
             figure(4) 
             plot(blade_data(:,1), real(py))
         end
-        Thrust(b,k,i) = trapz(blade_data(:,1),real(pz)) ;
+        Thrust(b,i) = trapz(blade_data(:,1),real(pz)) ;
         % power computation 
-        Power(b,k,i) = trapz(blade_data(:,1), real(dP)) ; 
+        Power(b,i) = trapz(blade_data(:,1), real(dP)) ; 
         
     end
-    Power_cum(i) = Power(1,9,i)+Power(2,9,i)+Power(3,9,i) ; 
-    Th_cum(i) = Thrust(1,9,i)+Thrust(2,9,i)+Thrust(3,9,i) ; 
+    Power_cum(i) = Power(1,i)+Power(2,i)+Power(3,i) ; 
+    Th_cum(i) = Thrust(1,i)+Thrust(2,i)+Thrust(3,i) ; 
 end
 
 %% Question 2 - Explain the new time series for the power and thrust as function of time using 
