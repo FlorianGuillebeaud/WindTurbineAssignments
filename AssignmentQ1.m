@@ -202,6 +202,6 @@ ylabel('Load [N]','interpreter','latex',  'FontSize', 20)
 
 figure(2)
 plot(blade_data(:,1), real(py))
-xlabel('Element position [m]',  'FontSize', 20)
-ylabel('Load [N]',  'FontSize', 20)
+xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 20)
+ylabel('Load [N]', 'interpreter','latex', 'FontSize', 20)
 
