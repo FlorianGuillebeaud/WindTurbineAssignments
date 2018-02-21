@@ -23,19 +23,19 @@ Pr = 10000*10^3 ; % [W] Rated Power
 Vcut_in = 4 ; % [m/s] Cut in speed
 Vcut_out = 25 ; % [m/s] Cut out speed
 global omega V_0 rho k_emp
-omega = 0.6283 ; % [rad/s] Constant rotational speed
-V_0 = 6 ; % [m/s] Constant wind speed
+omega = 0.673 ; % [rad/s] Constant rotational speed
+V_0 = 8 ; % [m/s] Constant wind speed
 rho = 1.225 ; % [kg/m3] air mass density
 k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
 delta_t = 0.02 ; % [s]
-N = 1100 ; % [s]
+N = 1000 ; % [s]
 N_element = length(blade_data) ;
 
 
 global Theta_pitch Theta_cone Theta_tilt Theta_yaw
-Theta_pitch = 0 ; % [rad]
+Theta_pitch = 0.0 ; % [rad]
 Theta_cone = 0 ; % [rad]
 Theta_tilt = 0 ; % [rad]
 Theta_yaw = 0 ; % [rad]
@@ -86,9 +86,9 @@ for i=2:N
         % loop over each element N_element
         for k=1:N_element
             % k
-            % [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, abs(Wy(b,k,i-1)), abs(Wz(b,k,i-1)), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
-            Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
-            Vrel_z = V_0+Wz(b,k,i-1);
+            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(b,k,i-1), Wz(b,k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            %Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
+            %Vrel_z = V_0+Wz(b,k,i-1);
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (-degtorad(blade_data(k,3)) + Theta_pitch)) ;
@@ -128,8 +128,9 @@ for i=2:N
             Vrel_abs = sqrt(Vrel_y^2+Vrel_z^2) ;
             Lift = 0.5*rho*Vrel_abs^2*Cl*blade_data(k,2) ;
             Drag = 0.5*rho*Vrel_abs^2*Cd*blade_data(k,2) ;
-            pz(k) = Lift*cos(phi) + Drag*sin(phi) ;
-            py(k) = Lift*sin(phi) - Drag*cos(phi) ;
+            
+            pz(k) = Lift*cos(phi) + Drag*sin(phi) ; % normal
+            py(k) = Lift*sin(phi) - Drag*cos(phi) ; % tangential
             
             % without Yaw, a can be calculate as follow : 
             a = abs(Wz(b,k,i-1))/V_0 ;
@@ -156,7 +157,7 @@ for i=2:N
                 Wy(b,k,i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k,i-1))^2))) ;
             end
           
-            dm(k) = blade_data(k)*B*pz(k) ;
+            dm(k) = blade_data(k)*py(k) ;
             dP(k) = omega*dm(k) ;
             
             % W_qs(i) = Wz_qs(i) + Wy_qs(i)
@@ -179,11 +180,16 @@ for i=2:N
         plot(blade_data(:,1), real(pz)) 
         figure(2) 
         plot(blade_data(:,1), real(py)) 
-        end 
-        p(b,i) = trapz(blade_data(:,1),real(pz)) ;
+        end
+        
+        % thrust computation for each blade
+        thrust(b) = trapz(blade_data(:,1),real(pz)) ;
+        
         % power computation 
-        Power(b,i) = trapz(blade_data(:,1), real(dP)) ; 
+        Power(b) = trapz(blade_data(:,1), real(dP)) ;
         
     end
-    Power_cum(i) = Power(1,i)+Power(2,i)+Power(3,i) ; 
 end
+
+Power_cum = 3*Power(1) 
+Thrust = sum(thrust(:,1)) 
