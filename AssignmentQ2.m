@@ -225,7 +225,7 @@ end
 %e.g. the time history for the induced wind speed at r=65.75 m (k=9)
 
 figure(3)
-plot(1:N, sqrt(Wy(6,:).^2+Wz(6,:).^2))
+plot(time, sqrt(Wy(6,:).^2+Wz(6,:).^2))
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
 ylabel('Induced wind $[\frac{m}{s}]$','interpreter','latex',  'FontSize', 12)
 figure(4)
@@ -244,4 +244,3 @@ hold on
 hline = refline([0 797]);
 hline.Color = 'r';
 hold off
-
