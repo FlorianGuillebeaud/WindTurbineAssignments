@@ -97,7 +97,7 @@ for i=2:N
     for b=3:3
         % b
         % loop over each element N_element
-        for k=1:18
+        for k=9:9
             % k
             [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(k,i-1), Wz(k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
