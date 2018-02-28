@@ -46,7 +46,7 @@ H = 119 ; % hub height (m)
 Ls = 7.1 ; % m
 R = 89.17 ; % [m] Rotor radius
 B = 3 ; % Number of blades
-Pr = 10000*10^3 ; % [W] Rated Power
+Pr = 10000*10^3 ; % [W] Rated Power
 Vcut_in = 4 ; % [m/s] Cut in speed
 Vcut_out = 25 ; % [m/s] Cut out speed
 
@@ -125,12 +125,14 @@ for i=2:N
     for b=1:B
         % b
         % loop over each element N_element
-        for k=1:N_element
+        for k=9:9
             % k
             
             
-            u_turb=velocity_turbulence(blade_data(k),Theta_wing1(i),time(i));
-            
+            u_turb=velocity_turbulence(blade_data(k),Theta_wing1(i),i);
+            if k==9 && b==1
+            u_turb9(i)=u_turb;
+            end
             [Vrel_y, Vrel_z] = velocity_compute_turb(u_turb,b, blade_data(k), H, Ls, Wy(b,k,i-1), Wz(b,k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             %Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
             %Vrel_z = V_0+Wz(b,k,i-1);
@@ -242,14 +244,30 @@ Thrust = sum(thrust(:,1))
 %% Plots 
 figure(1) 
 plot(blade_data(:,1), real(pz))
-xlabel('Element position $[m]$','interpreter','latex',  'FontSize', 20)
-ylabel('Load [N]','interpreter','latex',  'FontSize', 20)
+xlabel('Element position $[m]$','interpreter','latex',  'FontSize', 12)
+ylabel('Load [N]','interpreter','latex',  'FontSize', 12)
 
 figure(2)
 plot(blade_data(:,1), real(py))
-xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 20)
-ylabel('Load [N]', 'interpreter','latex', 'FontSize', 20)
+xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 12)
+ylabel('Load [N]', 'interpreter','latex', 'FontSize', 12)
 
-eps=0.01;
-P = p_compute(blade_data(:,1), blade_data(:,2), blade_data(:,3), eps);
+plot(time,u_turb9)
 
+%%
+
+stand_load=sqrt(1/N*sum((u_turb9-V_0)^2));
+I_load=stand_load/V_0;
+
+stand_load=sqrt(1/N*sum((u_turb9-V_0)^2));
+I_load=stand_load/V_0;
+
+stand_th=sqrt(1/N*sum((u_turb9-V_0)^2));
+I_th=stand_th/V_0;
+
+stand_th=sqrt(1/N*sum((u_turb9-V_0)^2));
+I_th=stand_th/V_0;
+
+% f=[];
+% PSD_load=(I_load^2*V_0*l)/(l+1.5*f*l/V_0)^(5/3);
+% PSD_th=(I_th^2*V_0*l)/(l+1.5*f*l/V_0)^(5/3);
