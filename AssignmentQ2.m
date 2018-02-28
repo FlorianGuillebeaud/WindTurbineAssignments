@@ -225,16 +225,15 @@ end
 %e.g. the time history for the induced wind speed at r=65.75 m (k=9)
 
 figure(3)
-plot(1:N, sqrt(Wy(6,:).^2+Wz(6,:).^2))
+plot(time, sqrt(Wy(6,:).^2+Wz(6,:).^2))
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
 ylabel('Induced wind $[\frac{m}{s}]$','interpreter','latex',  'FontSize', 12)
 figure(4)
-plot(1:N,Power(3,:))
+plot(time,Power(3,:)/10^3)
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
-ylabel('Power $[W]$','interpreter','latex',  'FontSize', 12)
+ylabel('Power $[kW]$','interpreter','latex',  'FontSize', 12)
 figure(5)
-plot(1:N,Thrust(3,:))
+plot(time,Thrust(3,:)/10^3)
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
-ylabel('Thrust $[Nm]$','interpreter','latex',  'FontSize', 12)
-
+ylabel('Thrust $[kNm]$','interpreter','latex',  'FontSize', 12)
 
