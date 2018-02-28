@@ -5,8 +5,10 @@ clear all
 clc
 
 %% Read Blade and airfoil Data %%
+global blade_data
 blade_data = xlsread('Blade_data') ;
 
+global W3_100 W3_60 W3_48 W3_36 W3_30 W3_24
 W3_100 = importdata('cylinder_ds.txt'); %100% CILINDER
 W3_60  = importdata('FFA-W3-600_ds.txt'); %600
 W3_48  = importdata('FFA-W3-480_ds.txt'); %480
@@ -15,6 +17,7 @@ W3_30  = importdata('FFA-W3-301_ds.txt'); %301
 W3_24  = importdata('FFA-W3-241_ds.txt'); %241
 
 %% Global parameters %%
+global omega V_0 rho k_emp B R
 H = 119 ; % hub height (m)
 Ls = 7.1 ; % m
 R = 89.17 ; % [m] Rotor radius
@@ -22,7 +25,7 @@ B = 3 ; % Number of blades
 Pr = 10000*10^3 ; % [W] Rated Power
 Vcut_in = 4 ; % [m/s] Cut in speed
 Vcut_out = 25 ; % [m/s] Cut out speed
-global omega V_0 rho k_emp
+
 omega = 0.673 ; % [rad/s] Constant rotational speed
 V_0 = 8 ; % [m/s] Constant wind speed
 rho = 1.225 ; % [kg/m3] air mass density
@@ -204,4 +207,7 @@ figure(2)
 plot(blade_data(:,1), real(py))
 xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 20)
 ylabel('Load [N]', 'interpreter','latex', 'FontSize', 20)
+
+eps=0.01;
+P = p_compute(blade_data(:,1), blade_data(:,2), blade_data(:,3), eps);
 
