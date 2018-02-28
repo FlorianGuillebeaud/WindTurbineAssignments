@@ -1,4 +1,4 @@
-%% Assignment 1 %%
+% Assignment 1 
 % Question 2
 close all
 clear all
@@ -43,17 +43,16 @@ Theta_yaw = 0 ; % [rad]
 %% Initialization %%
 V0y = 0 ;
 V0z = V_0 ;
-Wy = zeros(B,N_element,N) ;
-Wz =  zeros(B,N_element,N) ;
+Wy = zeros(N_element,N) ;
+Wz =  zeros(N_element,N) ;
 p = zeros(B, N) ; 
 time(1) = 0 ;
-Wy_qs(1)=0;
-Wz_qs(1)=0;
-Wy_int(1)=0;
-Wz_int(1)=0;
-W(1)=0;
-Hy(1)=0;
-Hz(1)=0;
+Wy_qs=zeros(N_element,N);
+Wz_qs=zeros(N_element,N);
+Wy_int=zeros(N_element,N);
+Wz_int=zeros(N_element,N);
+Hy=zeros(N_element,N);
+Hz=zeros(N_element,N);
 fs_time(1)=0;
 
 % Wind position initialization
@@ -94,12 +93,13 @@ for i=2:N
     end
     
     % loop over each blade B
-    for b=1:3
+
+    for b=3:3
         % b
         % loop over each element N_element
-        for k=9:9
+        for k=1:18
             % k
-            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(i-1), Wz(i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(k,i-1), Wz(k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (-degtorad(blade_data(k,3)) + Theta_pitch)) ;
@@ -156,7 +156,7 @@ for i=2:N
             py(k) = Lift*sin(phi) - Drag*cos(phi) ;
             
             % without Yaw, a can be calculate as follow : 
-            a = abs(Wz(i-1))/V_0;
+            a = abs(Wz(k,i-1))/V_0;
            
             % with yaw : need to be implemented 
             if a<=1/3
@@ -174,11 +174,11 @@ for i=2:N
             % We add this if statement otherwise the last element if NaN 
             % (F = 0 !! )
             if k==N_element
-                Wz_qs(i) = 0 ; 
-                Wy_qs(i) = 0 ; 
+                Wz_qs(k,i) = 0 ; 
+                Wy_qs(k,i) = 0 ; 
             else   
-                Wz_qs(i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))^2))) ;
-                Wy_qs(i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(i-1))^2))) ;
+                Wz_qs(k,i) = - B*Lift*cos(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(k,i-1))^2))) ;
+                Wy_qs(k,i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(k,i-1))^2))) ;
                 
             end
                       
@@ -188,14 +188,14 @@ for i=2:N
             tau1 = (1.1/(1-1.3*a))*(R/V_0);
             tau2 = (0.39-0.26*(blade_data(k)/R)^2)*tau1;
             
-            Hy = Wy_qs(i)+k_emp*tau1*((Wy_qs(i)-Wy_qs(i-1))/delta_t);
-            Hz = Wz_qs(i)+k_emp*tau1*((Wz_qs(i)-Wz_qs(i-1))/delta_t);
+            Hy(k,i) = Wy_qs(k,i)+k_emp*tau1*((Wy_qs(k,i)-Wy_qs(k,i-1))/delta_t);
+            Hz(k,i) = Wz_qs(k,i)+k_emp*tau1*((Wz_qs(k,i)-Wz_qs(k,i-1))/delta_t);
             
-            Wy_int(i) = Hy + (Wy_int(i-1)-Hy)*exp(-delta_t/tau1);
-            Wz_int(i) = Hz + (Wz_int(i-1)-Hz)*exp(-delta_t/tau1);
+            Wy_int(k,i) = Hy(k,i) + (Wy_int(k,i-1)-Hy(k,i))*exp(-delta_t/tau1);
+            Wz_int(k,i) = Hz(k,i) + (Wz_int(k,i-1)-Hz(k,i))*exp(-delta_t/tau1);
             
-            Wy(i) = Wy_int(i) + (Wy(i-1)-Wy_int(i))*exp(-delta_t/tau2);
-            Wz(i) = Wz_int(i) + (Wz(i-1)-Wz_int(i))*exp(-delta_t/tau2);
+            Wy(k,i) = Wy_int(k,i) + (Wy(k,i-1)-Wy_int(k,i))*exp(-delta_t/tau2);
+            Wz(k,i) = Wz_int(k,i) + (Wz(k,i-1)-Wz_int(k,i))*exp(-delta_t/tau2);
             
         end
         pz(N_element) = 0 ;
@@ -224,3 +224,9 @@ end
 %% Question 2 - Explain the new time series for the power and thrust as function of time using 
 %e.g. the time history for the induced wind speed at r=65.75 m (k=9)
 
+figure(1)
+plot(1:N, sqrt(Wy(6,:).^2+Wz(6,:).^2))
+figure(2)
+plot(1:N,Power(3,:))
+figure(3)
+plot(1:N,Thrust(3,:))
