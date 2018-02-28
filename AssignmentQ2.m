@@ -206,12 +206,12 @@ for i=2:N
         % Sanity check with teacher's results
         if i==N
             time(i)
-            figure(3)
+            figure(1)
             plot(blade_data(:,1), real(pz)) 
-            figure(4) 
+            figure(2) 
             plot(blade_data(:,1), real(py))
         end
-        Thrust(b,i) = trapz(blade_data(:,1),real(pz)) ;
+        Thrust(b,i) = trapz(blade_data(:,1),real(py)) ;
         % power computation 
         Power(b,i) = trapz(blade_data(:,1), real(dP)) ; 
         
@@ -224,9 +224,17 @@ end
 %% Question 2 - Explain the new time series for the power and thrust as function of time using 
 %e.g. the time history for the induced wind speed at r=65.75 m (k=9)
 
-figure(1)
-plot(1:N, sqrt(Wy(6,:).^2+Wz(6,:).^2))
-figure(2)
-plot(1:N,Power(3,:))
 figure(3)
+plot(1:N, sqrt(Wy(6,:).^2+Wz(6,:).^2))
+xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
+ylabel('Induced wind $[\frac{m}{s}]$','interpreter','latex',  'FontSize', 12)
+figure(4)
+plot(1:N,Power(3,:))
+xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
+ylabel('Power $[W]$','interpreter','latex',  'FontSize', 12)
+figure(5)
 plot(1:N,Thrust(3,:))
+xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
+ylabel('Thrust $[Nm]$','interpreter','latex',  'FontSize', 12)
+
+
