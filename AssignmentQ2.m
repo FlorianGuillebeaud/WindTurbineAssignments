@@ -23,8 +23,8 @@ Pr = 10000*10^3 ; % [W] Rated Power
 Vcut_in = 4 ; % [m/s] Cut in speed
 Vcut_out = 25 ; % [m/s] Cut out speed
 global omega V_0 rho k_emp
-omega = 0.6283 ; % [rad/s] Constant rotational speed
-V_0 = 6 ; % [m/s] Constant wind speed
+omega = 0.673 ; % [rad/s] Constant rotational speed
+V_0 = 8 ; % [m/s] Constant wind speed
 rho = 1.225 ; % [kg/m3] air mass density
 k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
@@ -97,7 +97,7 @@ for i=2:N
     for b=3:3
         % b
         % loop over each element N_element
-        for k=9:9
+        for k=1:N_element
             % k
             [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(k,i-1), Wz(k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
@@ -229,12 +229,19 @@ plot(1:N, sqrt(Wy(6,:).^2+Wz(6,:).^2))
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
 ylabel('Induced wind $[\frac{m}{s}]$','interpreter','latex',  'FontSize', 12)
 figure(4)
-plot(1:N,Power(3,:))
+plot(1:N,3*Power(3,:)/1000)
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
-ylabel('Power $[W]$','interpreter','latex',  'FontSize', 12)
+ylabel('Power $[kW]$','interpreter','latex',  'FontSize', 12)
+hold on
+hline = refline([0 3730]);
+hline.Color = 'r';
+hold off
 figure(5)
-plot(1:N,Thrust(3,:))
+plot(1:N,3*Thrust(3,:)/1000)
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
-ylabel('Thrust $[Nm]$','interpreter','latex',  'FontSize', 12)
-
+ylabel('Thrust $[kNm]$','interpreter','latex',  'FontSize', 12)
+hold on
+hline = refline([0 797]);
+hline.Color = 'r';
+hold off
 
