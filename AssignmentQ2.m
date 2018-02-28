@@ -97,7 +97,7 @@ for i=2:N
     for b=3:3
         % b
         % loop over each element N_element
-        for k=1:N_element
+        for k=1:18
             % k
             [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(k,i-1), Wz(k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             
@@ -211,7 +211,7 @@ for i=2:N
             figure(2) 
             plot(blade_data(:,1), real(py))
         end
-        Thrust(b,i) = trapz(blade_data(:,1),real(py)) ;
+        Thrust(b,i) = trapz(blade_data(:,1),real(pz)) ;
         % power computation 
         Power(b,i) = trapz(blade_data(:,1), real(dP)) ; 
         
@@ -229,18 +229,20 @@ plot(time, sqrt(Wy(6,:).^2+Wz(6,:).^2))
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
 ylabel('Induced wind $[\frac{m}{s}]$','interpreter','latex',  'FontSize', 12)
 figure(4)
-plot(1:N,3*Power(3,:)/1000)
+plot(time,3*Power(3,:)/10^3)
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
 ylabel('Power $[kW]$','interpreter','latex',  'FontSize', 12)
-hold on
-hline = refline([0 3730]);
-hline.Color = 'r';
+hold on 
+hline = refline([0 3730])
+hline.Color = 'r'
+legend('Calculated','DTU 10MW Reference')
 hold off
 figure(5)
-plot(1:N,3*Thrust(3,:)/1000)
+plot(time,3*Thrust(3,:)/10^3)
 xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
 ylabel('Thrust $[kNm]$','interpreter','latex',  'FontSize', 12)
-hold on
-hline = refline([0 797]);
-hline.Color = 'r';
+hold on 
+hline = refline([0 797])
+hline.Color = 'r'
+legend('Calculated','DTU 10MW Reference')
 hold off
