@@ -8,7 +8,6 @@ lambda = omega*R/V_0;
 
 for k = 1:(length(r)-1)
 
-k
     sigma = c(k)*B/(2*pi*r(k)); %Fraction of annual area covered by blades
 
     a = 1;
