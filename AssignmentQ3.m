@@ -129,9 +129,9 @@ for i=2:N
             % k
             
             
+            u_turb=velocity_turbulence(blade_data(k),Theta_wing1(i),time(i));
             
-            
-            [Vrel_y, Vrel_z] = velocity_compute(b, blade_data(k), H, Ls, Wy(b,k,i-1), Wz(b,k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
+            [Vrel_y, Vrel_z] = velocity_compute_turb(u_turb,b, blade_data(k), H, Ls, Wy(b,k,i-1), Wz(b,k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             %Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
             %Vrel_z = V_0+Wz(b,k,i-1);
             
