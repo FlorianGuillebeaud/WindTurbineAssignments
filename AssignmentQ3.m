@@ -58,7 +58,7 @@ k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
 delta_t = 0.02 ; % [s]
-N = 1000 ; % [s]
+N = 1000 ; % [s]   %WOULDNT THIS BE n1=4096?????? to run the time until this time
 N_element = length(blade_data) ;
 
 
@@ -252,22 +252,41 @@ plot(blade_data(:,1), real(py))
 xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 12)
 ylabel('Load [N]', 'interpreter','latex', 'FontSize', 12)
 
-plot(time,u_turb9)
+%% PSD
 
-%%
+% stand_dev=sqrt(1/N*sum((u_turb9-V_0).^2));
+% I=stand_th/V_0;
 
-stand_load=sqrt(1/N*sum((u_turb9-V_0)^2));
-I_load=stand_load/V_0;
+stand_load=sqrt(1/N*sum((pz-mean(pz)).^2));
+I_load=stand_load/V_0; %Would the denominator still be V_0?
 
-stand_load=sqrt(1/N*sum((u_turb9-V_0)^2));
-I_load=stand_load/V_0;
+stand_th=sqrt(1/N*sum((Thrust-mean(Thrust)).^2));
+I_th=stand_th/V_0;   %Would the denominator still be V_0?
 
-stand_th=sqrt(1/N*sum((u_turb9-V_0)^2));
-I_th=stand_th/V_0;
+%Anaïs offshore
+f_max=1/(2*delta_t);
+delta_f=2*pi/omega;
+f=[0:delta_f/2:f_max];   %Modify this: vector of 5? 
 
-stand_th=sqrt(1/N*sum((u_turb9-V_0)^2));
-I_th=stand_th/V_0;
+%Formulas
+l=(n1-1)*V_0; %Length scale
+PSD_load=(I_load^2*V_0*l)./(l+1.5.*f.*l./V_0).^(5/3);
+PSD_th=(I_th^2*V_0*l)./(l+1.5.*f.*l./V_0).^(5/3);
 
-% f=[];
-% PSD_load=(I_load^2*V_0*l)/(l+1.5*f*l/V_0)^(5/3);
-% PSD_th=(I_th^2*V_0*l)/(l+1.5*f*l/V_0)^(5/3);
+%PLOTS
+
+% figure(3) 
+% plot(time, PSD_load)
+% xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
+% ylabel('Normal Load PSD [N]','interpreter','latex',  'FontSize', 12)
+% 
+% figure(4)
+% plot(time, PSD_th)
+% xlabel('Time $[s]$', 'interpreter','latex', 'FontSize', 12)
+% ylabel('Thrust PSD [N]', 'interpreter','latex', 'FontSize', 12)
+
+
+
+
+
+
