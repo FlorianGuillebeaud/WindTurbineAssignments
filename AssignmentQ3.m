@@ -27,7 +27,6 @@ for i=1:n1
  end
 end
 
-
 %% Read Blade and airfoil Data %%
 global blade_data
 blade_data = xlsread('Blade_data') ;
@@ -58,7 +57,7 @@ k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
 delta_t = 0.02 ; % [s]
-N = 1000 ; % [s]   %WOULDNT THIS BE n1=4096?????? to run the time until this time
+N = 4500 ; % [s]   % so the turbulence structure passes the blades
 N_element = length(blade_data) ;
 
 
@@ -87,6 +86,8 @@ V0z = V_0 ;
 Wy = zeros(B,N_element,N) ;
 Wz =  zeros(B,N_element,N) ;
 a_rem = zeros(B,N_element,N) ; 
+pz_TS = zeros(N_element,N) ;
+py_TS = zeros(N_element,N);
 
 p = zeros(B, N) ; 
 time(1) = 0 ;
@@ -111,8 +112,6 @@ a_34 = [cos(Theta_cone) 0 -sin(Theta_cone) ;
     sin(Theta_cone) 0 cos(Theta_cone)];
 
 a_43 = a_34' ;
-
-
 %% Loop
 for i=2:N
 
@@ -122,14 +121,18 @@ for i=2:N
     Theta_wing3(i) = Theta_wing1(i) + 4*pi/3 ; % blade 3
     
     % loop over each blade B
-    for b=1:B
+    for b=1:1
         % b
         % loop over each element N_element
         for k=9:9
             % k
             
+            if (i < 4095)
+                u_turb = velocity_turbulence(blade_data(k),Theta_wing1(i),i);
+            else
+                u_turb = 0 ;
+            end
             
-            u_turb=velocity_turbulence(blade_data(k),Theta_wing1(i),i);
             if k==9 && b==1
             u_turb9(i)=u_turb;
             end
@@ -176,6 +179,9 @@ for i=2:N
             Lift = 0.5*rho*Vrel_abs^2*Cl*blade_data(k,2) ;
             Drag = 0.5*rho*Vrel_abs^2*Cd*blade_data(k,2) ;
             
+            pz_TS(k,i) = Lift*cos(phi) + Drag*sin(phi) ; % normal
+            py_TS(k,i) = Lift*sin(phi) - Drag*cos(phi) ; % tangential
+            
             pz(k) = Lift*cos(phi) + Drag*sin(phi) ; % normal
             py(k) = Lift*sin(phi) - Drag*cos(phi) ; % tangential
             
@@ -215,19 +221,22 @@ for i=2:N
             % W(i) = Wint(i) + (W(i-1)-Wint(i))*exp(-delta_t/tau2)
             
         end
+        pz_TS(N_element,i) = 0 ;
+        py_TS(N_element,i) = 0 ; 
+        
         pz(N_element) = 0 ;
         py(N_element) = 0 ; 
         dm(N_element) = 0 ; 
         dP(N_element) = 0 ; 
         
         % Sanity check with teacher's results
-        if (i==1000)
-        time(i)
-        figure(1)
-        plot(blade_data(:,1), real(pz)) 
-        figure(2) 
-        plot(blade_data(:,1), real(py)) 
-        end
+%         if (i==1000)
+%         time(i)
+%         figure(1)
+%         plot(blade_data(:,1), real(pz)) 
+%         figure(2) 
+%         plot(blade_data(:,1), real(py)) 
+%         end
         
         % thrust computation for each blade
         thrust(b) = trapz(blade_data(:,1),real(pz)) ;
