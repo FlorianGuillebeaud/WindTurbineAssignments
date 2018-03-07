@@ -128,7 +128,8 @@ for i=2:N
             % k
             
             if (i < 4095)
-                u_turb = velocity_turbulence(blade_data(k),Theta_wing1(i),i);
+                Theta_wing=eval(['Theta_wing',num2str(b)]);
+                u_turb = velocity_turbulence(blade_data(k),Theta_wing(i),i);
             else
                 u_turb = 0 ;
             end
@@ -254,14 +255,14 @@ end
 %% Plots 
 figure(1) 
 plot(time, real(pz))
-xlabel('Time ','interpreter','latex',  'FontSize', 12)
-ylabel('Load pz for element 9[N]','interpreter','latex',  'FontSize', 12)
-
+xlabel('Time [s]','interpreter','latex',  'FontSize', 12)
+ylabel('Load normal to rotor plane at r=65.75m [N]','interpreter','latex',  'FontSize', 12)
+grid minor
 figure(2)
 plot(time, Thrust)
-xlabel('Time', 'interpreter','latex', 'FontSize', 12)
-ylabel('Thrust', 'interpreter','latex', 'FontSize', 12)
-
+xlabel('Time [s]', 'interpreter','latex', 'FontSize', 12)
+ylabel('Thrust [N]', 'interpreter','latex', 'FontSize', 12)
+grid minor
 %% PSD
 
 
@@ -271,21 +272,23 @@ fs=1/delta_t;
 f=f_low:0.01:f_high;
 
 figure(3)
-[Pyy,f]=pwelch(pz-mean(pz),128,64,f,fs);
+[Pyy,f]=pwelch(pz-mean(pz),256,128,f,fs);
 semilogy(2*pi*f/omega,Pyy)
 grid on
 
 xlabel('\omega/\omega_{o}','FontSize',14)
 ylabel('PSD [kW^{2}/Hz]','FontSize',14)
+title('Power spectrum density of the load normal at r=65.75 m')
 set(gca,'FontSize',14)
 
 figure(4)
-[Pyy,f]=pwelch(Thrust-mean(Thrust),128,64,f,fs);
+[Pyy,f]=pwelch(Thrust-mean(Thrust),256,128,f,fs);
 semilogy(2*pi*f/omega,Pyy)
 grid on
 
 xlabel('\omega/\omega_{o}','FontSize',14)
 ylabel('PSD [kW^{2}/Hz]','FontSize',14)
+title('Power spectrum density of total thrust')
 set(gca,'FontSize',14)
 
 
