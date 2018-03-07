@@ -200,14 +200,15 @@ Thrust = sum(thrust(:,1))
 %% Plots 
 figure(1) 
 plot(blade_data(:,1), real(pz))
-xlabel('Element position $[m]$','interpreter','latex',  'FontSize', 20)
-ylabel('Load [N]','interpreter','latex',  'FontSize', 20)
+xlabel('Element position $[m]$','interpreter','latex',  'FontSize', 12)
+ylabel('Normal load [N]','interpreter','latex',  'FontSize', 12)
 
 figure(2)
 plot(blade_data(:,1), real(py))
-xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 20)
-ylabel('Load [N]', 'interpreter','latex', 'FontSize', 20)
-
+xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 12)
+ylabel('Tangential load [N]', 'interpreter','latex', 'FontSize', 12)
+ylim([-200 700])
+global pt 
 eps=0.01;
 P = p_compute(blade_data(:,1), blade_data(:,2), blade_data(:,3), eps);
 
