@@ -121,10 +121,10 @@ for i=2:N
     Theta_wing3(i) = Theta_wing1(i) + 4*pi/3 ; % blade 3
     
     % loop over each blade B
-    for b=1:1
+    for b=1:3
         % b
         % loop over each element N_element
-        for k=9:9
+        for k=1:(N_element-1)
             % k
             
             if (i < 4095)
@@ -136,6 +136,7 @@ for i=2:N
             if k==9 && b==1
             u_turb9(i)=u_turb;
             end
+            
             [Vrel_y, Vrel_z] = velocity_compute_turb(u_turb,b, blade_data(k), H, Ls, Wy(b,k,i-1), Wz(b,k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
             %Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
             %Vrel_z = V_0+Wz(b,k,i-1);
@@ -181,10 +182,10 @@ for i=2:N
             
             pz_TS(k,i) = Lift*cos(phi) + Drag*sin(phi) ; % normal
             py_TS(k,i) = Lift*sin(phi) - Drag*cos(phi) ; % tangential
-            
-            pz(k) = Lift*cos(phi) + Drag*sin(phi) ; % normal
-            py(k) = Lift*sin(phi) - Drag*cos(phi) ; % tangential
-            
+            if k==9
+                pz(i) = Lift*cos(phi) + Drag*sin(phi) ; % normal
+                py(i) = Lift*sin(phi) - Drag*cos(phi) ; % tangential
+            end
             % without Yaw, a can be calculate as follow : 
             a = abs(Wz(b,k,i-1))/V_0 ;
             a_rem(b,k,i) = a ;
@@ -210,8 +211,8 @@ for i=2:N
                 Wy(b,k,i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k,i-1))^2))) ;
             end
           
-            dm(k) = blade_data(k)*py(k) ;
-            dP(k) = omega*dm(k) ;
+%             dm(k) = blade_data(k)*py(k) ;
+%             dP(k) = omega*dm(k) ;
             
             % W_qs(i) = Wz_qs(i) + Wy_qs(i)
             % tau1 = (1.1/(1-1.3*a))*(R/V_0)
@@ -224,10 +225,9 @@ for i=2:N
         pz_TS(N_element,i) = 0 ;
         py_TS(N_element,i) = 0 ; 
         
-        pz(N_element) = 0 ;
-        py(N_element) = 0 ; 
-        dm(N_element) = 0 ; 
-        dP(N_element) = 0 ; 
+ 
+%         dm(N_element) = 0 ; 
+%         dP(N_element) = 0 ; 
         
         % Sanity check with teacher's results
 %         if (i==1000)
@@ -239,63 +239,53 @@ for i=2:N
 %         end
         
         % thrust computation for each blade
-        thrust(b) = trapz(blade_data(:,1),real(pz)) ;
+        thrust(b,i) = trapz(blade_data(:,1),real(pz_TS(:,i))) ;
         
         % power computation 
-        Power(b) = trapz(blade_data(:,1), real(dP)) ;
+%         Power(b,i) = trapz(blade_data(:,1), real(dP)) ;
         
     end
+    Thrust (i)= sum(thrust(:,i)) ;
 end
 
-Power_cum = 3*Power(1) 
-Thrust = sum(thrust(:,1)) 
+% Power_cum = 3*Power(1) 
+
 
 %% Plots 
 figure(1) 
-plot(blade_data(:,1), real(pz))
-xlabel('Element position $[m]$','interpreter','latex',  'FontSize', 12)
-ylabel('Load [N]','interpreter','latex',  'FontSize', 12)
+plot(time, real(pz))
+xlabel('Time ','interpreter','latex',  'FontSize', 12)
+ylabel('Load pz for element 9[N]','interpreter','latex',  'FontSize', 12)
 
 figure(2)
-plot(blade_data(:,1), real(py))
-xlabel('Element position [m]', 'interpreter','latex', 'FontSize', 12)
-ylabel('Load [N]', 'interpreter','latex', 'FontSize', 12)
+plot(time, Thrust)
+xlabel('Time', 'interpreter','latex', 'FontSize', 12)
+ylabel('Thrust', 'interpreter','latex', 'FontSize', 12)
 
 %% PSD
 
-% stand_dev=sqrt(1/N*sum((u_turb9-V_0).^2));
-% I=stand_th/V_0;
 
-stand_load=sqrt(1/N*sum((pz-mean(pz)).^2));
-I_load=stand_load/V_0; %Would the denominator still be V_0?
+f_low=1/(N*delta_t);
+f_high=0.5/delta_t;
+fs=1/delta_t;
+f=f_low:0.01:f_high;
 
-stand_th=sqrt(1/N*sum((Thrust-mean(Thrust)).^2));
-I_th=stand_th/V_0;   %Would the denominator still be V_0?
+figure(3)
+[Pyy,f]=pwelch(pz-mean(pz),128,64,f,fs);
+semilogy(2*pi*f/omega,Pyy)
+grid on
 
-%Anaïs offshore
-f_max=1/(2*delta_t);
-delta_f=2*pi/omega;
-f=[0:delta_f/2:f_max];   %Modify this: vector of 5? 
+xlabel('\omega/\omega_{o}','FontSize',14)
+ylabel('PSD [kW^{2}/Hz]','FontSize',14)
+set(gca,'FontSize',14)
 
-%Formulas
-l=(n1-1)*V_0; %Length scale
-PSD_load=(I_load^2*V_0*l)./(l+1.5.*f.*l./V_0).^(5/3);
-PSD_th=(I_th^2*V_0*l)./(l+1.5.*f.*l./V_0).^(5/3);
+figure(4)
+[Pyy,f]=pwelch(Thrust-mean(Thrust),128,64,f,fs);
+semilogy(2*pi*f/omega,Pyy)
+grid on
 
-%PLOTS
-
-% figure(3) 
-% plot(time, PSD_load)
-% xlabel('Time $[s]$','interpreter','latex',  'FontSize', 12)
-% ylabel('Normal Load PSD [N]','interpreter','latex',  'FontSize', 12)
-% 
-% figure(4)
-% plot(time, PSD_th)
-% xlabel('Time $[s]$', 'interpreter','latex', 'FontSize', 12)
-% ylabel('Thrust PSD [N]', 'interpreter','latex', 'FontSize', 12)
-
-
-
-
+xlabel('\omega/\omega_{o}','FontSize',14)
+ylabel('PSD [kW^{2}/Hz]','FontSize',14)
+set(gca,'FontSize',14)
 
 
