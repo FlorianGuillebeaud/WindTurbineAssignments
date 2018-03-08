@@ -9,7 +9,7 @@ fid1=fopen('sim1.bin'); % (fluctuating u component)
 % fid2=fopen('sim2.bin'); % (fluctuating v component)
 % fid3=fopen('sim3.bin'); % (fluctuating w component)
 global u
-n1=4096;
+n1=8192;
 n2=32;
 n3=32;
 uraw=fread(fid1,'single');
@@ -56,8 +56,8 @@ rho = 1.225 ; % [kg/m3] air mass density
 k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
-delta_t = 0.1 ; % [s]
-N =1800 ; % [s]   % so the turbulence structure passes the blades
+delta_t = 0.05 ; % [s]
+N =3600 ; % [s]   % so the turbulence structure passes the blades
 N_element = length(blade_data) ;
 
 
@@ -139,8 +139,6 @@ for i=2:N
             end
             
             [Vrel_y, Vrel_z] = velocity_compute_turb(u_turb,b, blade_data(k), H, Ls, Wy(b,k,i-1), Wz(b,k,i-1), Theta_wing1(i), Theta_wing2(i), Theta_wing3(i) ) ;
-            %Vrel_y = -omega*blade_data(k)+Wy(b,k,i-1) ;  
-            %Vrel_z = V_0+Wz(b,k,i-1);
             
             phi = atan(real(-Vrel_z)/real(Vrel_y)) ;
             alpha = radtodeg(phi - (-degtorad(blade_data(k,3)) + Theta_pitch)) ;
@@ -212,44 +210,23 @@ for i=2:N
                 Wy(b,k,i) = - B*Lift*sin(phi)/(4*pi*rho*blade_data(k)*F*(sqrt(V0y^2+(V0z+fg*Wz(b,k,i-1))^2))) ;
             end
           
-%             dm(k) = blade_data(k)*py(k) ;
-%             dP(k) = omega*dm(k) ;
-            
-            % W_qs(i) = Wz_qs(i) + Wy_qs(i)
-            % tau1 = (1.1/(1-1.3*a))*(R/V_0)
-            % tau2 = (0.39-0.26*(r/R)^2)*tau1
-            % H = W_qs(i)+k_emp*tau1*(((W_qs(i)-W_qs(i-1)/delta_t)
-            % Wint(i) = H + (Wint(i-1)-H)*exp(-delta_t/tau1)
-            % W(i) = Wint(i) + (W(i-1)-Wint(i))*exp(-delta_t/tau2)
             
         end
         pz_TS(N_element,i) = 0 ;
         py_TS(N_element,i) = 0 ; 
         
- 
-%         dm(N_element) = 0 ; 
-%         dP(N_element) = 0 ; 
-        
-        % Sanity check with teacher's results
-%         if (i==1000)
-%         time(i)
-%         figure(1)
-%         plot(blade_data(:,1), real(pz)) 
-%         figure(2) 
-%         plot(blade_data(:,1), real(py)) 
-%         end
+
         
         % thrust computation for each blade
         thrust(b,i) = trapz(blade_data(:,1),real(pz_TS(:,i))) ;
         
-        % power computation 
-%         Power(b,i) = trapz(blade_data(:,1), real(dP)) ;
+
         
     end
     Thrust (i)= sum(thrust(:,i)) ;
 end
 
-% Power_cum = 3*Power(1) 
+
 
 
 %% Plots 
