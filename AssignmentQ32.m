@@ -8,7 +8,7 @@ fid1=fopen('sim1.bin'); % (fluctuating u component)
 % fid2=fopen('sim2.bin'); % (fluctuating v component)
 % fid3=fopen('sim3.bin'); % (fluctuating w component)
 global u
-n1=4096;
+n1=8192;
 n2=32;
 n3=32;
 uraw=fread(fid1,'single');
@@ -52,8 +52,8 @@ rho = 1.225 ; % [kg/m3] air mass density
 k_emp = 0.6 ; % empirical value used to calculate W_intermediate
 
 %
-delta_t = 0.1 ; % [s]
-N = 1800 ; % [s]
+delta_t = 0.05 ; % [s]
+N = 3600 ; % [s]
 N_element = length(blade_data) ;
 
 
@@ -233,8 +233,6 @@ for i=2:N
                 
             end
                       
-%             dm(k) = blade_data(k)*py(k) ;
-%             dP(k) = omega*dm(k) ;
             
             tau1 = (1.1/(1-1.3*a))*(R/V_0);
             tau2 = (0.39-0.26*(blade_data(k)/R)^2)*tau1;
@@ -252,21 +250,12 @@ for i=2:N
         pz_TS(N_element,i) = 0 ;
         py_TS(N_element,i) = 0 ; ; 
         
-        % Sanity check with teacher's results
-%         if i==N
-%             time(i)
-%             figure(1)
-%             plot(blade_data(:,1), real(pz)) 
-%             figure(2) 
-%             plot(blade_data(:,1), real(py))
-%         end
+
        thrust(b,i) = trapz(blade_data(:,1),real(pz_TS(:,i))) ;
-        % power computation 
-% %         Power(b,i) = trapz(blade_data(:,1), real(dP)) ; 
+
         
     end
-%     Power_cum(i) = Power(1,9,i)+Power(2,9,i)+Power(3,9,i) ; 
-%     Th_cum(i) = Thrust(1,9,i)+Thrust(2,9,i)+Thrust(3,9,i) ; 
+
 Thrust (i)= sum(thrust(:,i)) ;
 end
 
