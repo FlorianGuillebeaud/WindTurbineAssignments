@@ -163,12 +163,6 @@ for i=2:N
             dm(k) = blade_data(k)*py(k) ;
             dP(k) = omega*dm(k) ;
             
-            % W_qs(i) = Wz_qs(i) + Wy_qs(i)
-            % tau1 = (1.1/(1-1.3*a))*(R/V_0)
-            % tau2 = (0.39-0.26*(r/R)^2)*tau1
-            % H = W_qs(i)+k_emp*tau1*(((W_qs(i)-W_qs(i-1)/delta_t)
-            % Wint(i) = H + (Wint(i-1)-H)*exp(-delta_t/tau1)
-            % W(i) = Wint(i) + (W(i-1)-Wint(i))*exp(-delta_t/tau2)
             
         end
         pz(N_element) = 0 ;
